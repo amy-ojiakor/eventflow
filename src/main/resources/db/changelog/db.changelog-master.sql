@@ -1,4 +1,3 @@
-
 --liquibase formatted sql
 
 -- =========================================================
@@ -6,17 +5,17 @@
 -- Database: PostgreSQL 17
 --
 -- Project: EventFlow - Event Booking and Notification Platform
--- Author: amy-ojiakor-ojiakor
+-- Author: amy-ojiakor
 --
 -- IMPORTANT:
--- This file contains the initial database schema.
+-- This file defines the initial database schema.
 -- Do not modify an already-applied changeset.
 -- Add future database changes as new changesets.
 -- =========================================================
 
 
 -- =========================================================
--- CHANGESET 001: VENUES
+-- SECTION 001: VENUES
 -- Physical or virtual locations where events take place.
 -- =========================================================
 
@@ -33,7 +32,7 @@ CREATE TABLE venues (
 
 
 -- =========================================================
--- CHANGESET 002: USERS
+-- SECTION 002: USERS
 -- Basic customer and event-organiser profiles.
 -- Authentication is outside the initial scope.
 -- =========================================================
@@ -55,7 +54,7 @@ CREATE TABLE users (
 
 
 -- =========================================================
--- CHANGESET 003: EVENTS
+-- SECTION 003: EVENTS
 -- Events belong to an organiser and take place at a venue.
 -- Minimum deposit defaults to 30% of the booking total.
 -- =========================================================
@@ -108,7 +107,7 @@ CREATE INDEX idx_events_status
 
 
 -- =========================================================
--- CHANGESET 004: TICKET TYPES
+-- SECTION 004: TICKET TYPES
 -- An event can have multiple ticket categories.
 --
 -- Inventory:
@@ -128,7 +127,7 @@ CREATE TABLE ticket_types (
     name VARCHAR(150) NOT NULL,
     description TEXT,
     price NUMERIC(14,2) NOT NULL,
-    currency CHAR(3) NOT NULL DEFAULT 'NGN',
+    currency VARCHAR(3) NOT NULL DEFAULT 'NGN',
     total_quantity INTEGER NOT NULL,
     quantity_sold INTEGER NOT NULL DEFAULT 0,
     quantity_reserved INTEGER NOT NULL DEFAULT 0,
@@ -173,7 +172,7 @@ CREATE INDEX idx_ticket_types_event_id
 
 
 -- =========================================================
--- CHANGESET 005: CHECKOUT HOLDS
+-- SECTION 005: CHECKOUT HOLDS
 -- Temporary inventory holds while a customer completes
 -- checkout. These are not deposit-backed bookings.
 --
@@ -209,7 +208,7 @@ CREATE INDEX idx_checkout_holds_status_expiry
 
 
 -- =========================================================
--- CHANGESET 006: CHECKOUT HOLD ITEMS
+-- SECTION 006: CHECKOUT HOLD ITEMS
 -- Stores the ticket categories, quantities and prices
 -- temporarily held during checkout.
 -- =========================================================
@@ -222,7 +221,7 @@ CREATE TABLE checkout_hold_items (
     ticket_type_id BIGINT NOT NULL REFERENCES ticket_types(id),
     quantity INTEGER NOT NULL,
     unit_price NUMERIC(14,2) NOT NULL,
-    currency CHAR(3) NOT NULL DEFAULT 'NGN',
+    currency VARCHAR(3) NOT NULL DEFAULT 'NGN',
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT chk_checkout_hold_item_quantity
@@ -242,7 +241,7 @@ CREATE INDEX idx_checkout_hold_items_ticket_type_id
 
 
 -- =========================================================
--- CHANGESET 007: BOOKINGS
+-- SECTION 007: BOOKINGS
 -- A booking is initially created in PENDING_DEPOSIT state.
 --
 -- After the backend verifies a successful qualifying payment:
@@ -262,7 +261,7 @@ CREATE TABLE bookings (
     checkout_hold_id BIGINT UNIQUE REFERENCES checkout_holds(id),
     booking_reference VARCHAR(100) NOT NULL,
     total_amount NUMERIC(14,2) NOT NULL,
-    currency CHAR(3) NOT NULL DEFAULT 'NGN',
+    currency VARCHAR(3) NOT NULL DEFAULT 'NGN',
     minimum_deposit_percentage NUMERIC(5,2) NOT NULL,
     minimum_deposit_amount NUMERIC(14,2) NOT NULL,
     status VARCHAR(25) NOT NULL DEFAULT 'PENDING_DEPOSIT',
@@ -324,7 +323,7 @@ CREATE INDEX idx_bookings_status_payment_due
 
 
 -- =========================================================
--- CHANGESET 008: BOOKING ITEMS
+-- SECTION 008: BOOKING ITEMS
 -- Resolves the many-to-many relationship between bookings
 -- and ticket types.
 --
@@ -342,7 +341,7 @@ CREATE TABLE booking_items (
         REFERENCES ticket_types(id),
     quantity INTEGER NOT NULL,
     unit_price NUMERIC(14,2) NOT NULL,
-    currency CHAR(3) NOT NULL DEFAULT 'NGN',
+    currency VARCHAR(3) NOT NULL DEFAULT 'NGN',
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT chk_booking_item_quantity
@@ -362,7 +361,7 @@ CREATE INDEX idx_booking_items_ticket_type_id
 
 
 -- =========================================================
--- CHANGESET 009: PAYMENTS
+-- SECTION 009: PAYMENTS
 -- A booking can have multiple payment transactions.
 -- This supports deposits and instalment payments.
 --
@@ -379,7 +378,7 @@ CREATE TABLE payments (
     payment_provider VARCHAR(100),
     payment_method VARCHAR(50),
     amount NUMERIC(14,2) NOT NULL,
-    currency CHAR(3) NOT NULL DEFAULT 'NGN',
+    currency VARCHAR(3) NOT NULL DEFAULT 'NGN',
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     successful_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -418,7 +417,7 @@ CREATE INDEX idx_payments_status
 
 
 -- =========================================================
--- CHANGESET 010: NOTIFICATIONS
+-- SECTION 010: NOTIFICATIONS
 -- Stores notifications to be sent to customers.
 -- Supports email, SMS and in-app notifications.
 -- =========================================================
@@ -464,7 +463,7 @@ CREATE INDEX idx_notifications_status_scheduled
 
 
 -- =========================================================
--- CHANGESET 011: OUTBOX EVENTS
+-- SECTION 011: OUTBOX EVENTS
 -- Stores domain events in the same database transaction
 -- as the corresponding business operation.
 --

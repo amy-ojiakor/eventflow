@@ -1,4 +1,4 @@
-package com.eventflow.eventflow;
+package com.amyojiakor.eventflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

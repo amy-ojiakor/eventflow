@@ -8,7 +8,7 @@
         <version>4.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.eventflow</groupId>
+    <groupId>com.amyojiakor</groupId>
     <artifactId>eventflow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>eventflow</name>
@@ -69,8 +69,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
         </dependency>
     </dependencies>
 
